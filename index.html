@@ -1,0 +1,1282 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>リスク許容度チェッカー | あき姉チャンネル</title>
+<style>
+:root {
+  --main: #C4A882;
+  --sub: #E8D5B7;
+  --accent: #8B6F47;
+  --background: #FFF8F0;
+  --text: #4A3728;
+  --white: #FFFFFF;
+  --danger-light: #FFE0E0;
+  --danger: #E57373;
+  --danger-dark: #C62828;
+  --success: #81C784;
+  --shadow: 0 2px 12px rgba(74, 55, 40, 0.10);
+  --shadow-lg: 0 4px 24px rgba(74, 55, 40, 0.15);
+  --radius: 16px;
+  --radius-sm: 10px;
+  --transition: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Hiragino Kaku Gothic ProN", "Hiragino Sans", "Noto Sans JP", sans-serif;
+  background: var(--background);
+  color: var(--text);
+  min-height: 100vh;
+  line-height: 1.7;
+  font-size: 17px;
+  -webkit-font-smoothing: antialiased;
+}
+
+.app-container {
+  max-width: 480px;
+  margin: 0 auto;
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Header */
+.header {
+  background: linear-gradient(135deg, var(--main), var(--accent));
+  color: var(--white);
+  padding: 16px 20px;
+  text-align: center;
+  font-size: 15px;
+  font-weight: 600;
+  letter-spacing: 0.5px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  box-shadow: 0 2px 8px rgba(139, 111, 71, 0.2);
+}
+
+/* Screen management */
+.screen {
+  flex: 1;
+  display: none;
+  opacity: 0;
+  padding: 24px 20px 120px;
+  transition: opacity var(--transition);
+}
+.screen.active {
+  display: block;
+}
+.screen.visible {
+  opacity: 1;
+}
+
+/* Start screen */
+.start-hero {
+  text-align: center;
+  padding: 48px 0 32px;
+}
+.start-icon {
+  width: 88px;
+  height: 88px;
+  background: linear-gradient(135deg, var(--sub), var(--main));
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 24px;
+  box-shadow: var(--shadow-lg);
+}
+.start-icon svg {
+  width: 44px;
+  height: 44px;
+}
+.start-title {
+  font-size: 24px;
+  font-weight: 700;
+  line-height: 1.4;
+  margin-bottom: 12px;
+  color: var(--text);
+}
+.start-title em {
+  font-style: normal;
+  color: var(--accent);
+}
+.start-subtitle {
+  font-size: 15px;
+  color: #8B7B6B;
+  margin-bottom: 8px;
+}
+.start-time {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--accent);
+  background: var(--sub);
+  padding: 6px 16px;
+  border-radius: 20px;
+  margin-top: 12px;
+}
+
+.start-features {
+  margin: 32px 0;
+}
+.feature-item {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+  background: var(--white);
+  padding: 18px;
+  border-radius: var(--radius-sm);
+  margin-bottom: 12px;
+  box-shadow: var(--shadow);
+}
+.feature-num {
+  min-width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--main), var(--accent));
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+}
+.feature-text {
+  font-size: 15px;
+  line-height: 1.5;
+}
+.feature-text strong {
+  color: var(--accent);
+}
+
+/* Primary button */
+.btn-primary {
+  display: block;
+  width: 100%;
+  padding: 18px;
+  background: linear-gradient(135deg, var(--accent), #6B5335);
+  color: var(--white);
+  border: none;
+  border-radius: var(--radius);
+  font-size: 18px;
+  font-weight: 700;
+  cursor: pointer;
+  letter-spacing: 1px;
+  box-shadow: 0 4px 16px rgba(139, 111, 71, 0.3);
+  transition: all 0.3s ease;
+  margin-top: 24px;
+}
+.btn-primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 24px rgba(139, 111, 71, 0.4);
+}
+.btn-primary:active {
+  transform: translateY(0);
+}
+
+/* Secondary button */
+.btn-secondary {
+  display: block;
+  width: 100%;
+  padding: 16px;
+  background: var(--white);
+  color: var(--accent);
+  border: 2px solid var(--main);
+  border-radius: var(--radius);
+  font-size: 16px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  margin-top: 12px;
+}
+.btn-secondary:hover {
+  background: var(--sub);
+}
+
+/* Back button */
+.btn-back {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  background: none;
+  border: none;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 500;
+  cursor: pointer;
+  padding: 8px 0;
+  margin-bottom: 16px;
+}
+.btn-back:hover { opacity: 0.7; }
+
+/* Progress bar */
+.progress-container {
+  margin-bottom: 28px;
+}
+.progress-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 13px;
+  color: #8B7B6B;
+  margin-bottom: 8px;
+}
+.progress-bar {
+  height: 6px;
+  background: var(--sub);
+  border-radius: 3px;
+  overflow: hidden;
+}
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--main), var(--accent));
+  border-radius: 3px;
+  transition: width 0.5s ease;
+}
+
+/* Question */
+.question-category {
+  font-size: 12px;
+  font-weight: 600;
+  color: var(--accent);
+  background: var(--sub);
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 12px;
+  margin-bottom: 12px;
+  letter-spacing: 0.5px;
+}
+.question-text {
+  font-size: 21px;
+  font-weight: 700;
+  line-height: 1.5;
+  margin-bottom: 24px;
+}
+
+/* Option cards */
+.options {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.option-card {
+  background: var(--white);
+  border: 2px solid transparent;
+  border-radius: var(--radius);
+  padding: 18px 20px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  box-shadow: var(--shadow);
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  -webkit-tap-highlight-color: transparent;
+}
+.option-card:hover {
+  border-color: var(--main);
+  transform: translateY(-1px);
+  box-shadow: var(--shadow-lg);
+}
+.option-card.selected {
+  border-color: var(--accent);
+  background: linear-gradient(135deg, rgba(196, 168, 130, 0.08), rgba(232, 213, 183, 0.15));
+}
+.option-letter {
+  min-width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  background: var(--sub);
+  color: var(--accent);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  font-weight: 700;
+  transition: all 0.3s ease;
+}
+.option-card.selected .option-letter {
+  background: var(--accent);
+  color: var(--white);
+}
+.option-label {
+  font-size: 16px;
+  font-weight: 500;
+  line-height: 1.4;
+}
+
+/* Result screen */
+.result-type-badge {
+  text-align: center;
+  margin-bottom: 24px;
+}
+.result-type-label {
+  font-size: 13px;
+  color: #8B7B6B;
+  margin-bottom: 8px;
+}
+.result-type-name {
+  font-size: 28px;
+  font-weight: 800;
+  color: var(--accent);
+  line-height: 1.3;
+}
+.result-score {
+  font-size: 14px;
+  color: #8B7B6B;
+  margin-top: 4px;
+}
+
+/* Donut chart */
+.chart-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin: 28px 0;
+  position: relative;
+}
+.chart-container svg {
+  filter: drop-shadow(0 2px 8px rgba(139, 111, 71, 0.15));
+}
+.chart-center-text {
+  position: absolute;
+  text-align: center;
+}
+.chart-center-text .ratio-label {
+  font-size: 12px;
+  color: #8B7B6B;
+}
+.chart-center-text .ratio-value {
+  font-size: 18px;
+  font-weight: 700;
+  color: var(--text);
+}
+
+.chart-legend {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+  margin-bottom: 28px;
+}
+.legend-item {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.legend-dot {
+  width: 14px;
+  height: 14px;
+  border-radius: 50%;
+}
+.legend-dot.stable { background: var(--main); }
+.legend-dot.aggressive { background: var(--accent); }
+
+/* Advice card */
+.advice-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 24px;
+  box-shadow: var(--shadow);
+  margin-bottom: 20px;
+}
+.advice-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.advice-card p {
+  font-size: 15px;
+  line-height: 1.8;
+}
+
+/* Yield info */
+.yield-info {
+  background: linear-gradient(135deg, rgba(196, 168, 130, 0.1), rgba(232, 213, 183, 0.2));
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  text-align: center;
+  margin-bottom: 24px;
+}
+.yield-label {
+  font-size: 13px;
+  color: #8B7B6B;
+}
+.yield-value {
+  font-size: 22px;
+  font-weight: 700;
+  color: var(--accent);
+}
+
+/* Crash simulation */
+.slider-container {
+  margin: 24px 0 32px;
+}
+.slider-label {
+  display: flex;
+  justify-content: space-between;
+  align-items: baseline;
+  margin-bottom: 12px;
+}
+.slider-label-text {
+  font-size: 15px;
+  font-weight: 600;
+}
+.slider-value {
+  font-size: 24px;
+  font-weight: 800;
+  color: var(--accent);
+}
+.slider-value span {
+  font-size: 14px;
+  font-weight: 500;
+}
+
+input[type="range"] {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 100%;
+  height: 8px;
+  background: var(--sub);
+  border-radius: 4px;
+  outline: none;
+}
+input[type="range"]::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--main), var(--accent));
+  border-radius: 50%;
+  cursor: pointer;
+  box-shadow: 0 2px 8px rgba(139, 111, 71, 0.3);
+}
+input[type="range"]::-moz-range-thumb {
+  width: 28px;
+  height: 28px;
+  background: linear-gradient(135deg, var(--main), var(--accent));
+  border-radius: 50%;
+  cursor: pointer;
+  border: none;
+  box-shadow: 0 2px 8px rgba(139, 111, 71, 0.3);
+}
+.slider-range {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: #8B7B6B;
+  margin-top: 6px;
+}
+
+/* Crash scenario cards */
+.crash-scenario {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 16px;
+  box-shadow: var(--shadow);
+  border-left: 4px solid;
+}
+.crash-scenario.severe { border-color: #C62828; }
+.crash-scenario.moderate { border-color: #E57373; }
+.crash-scenario.mild { border-color: #FFAB91; }
+
+.crash-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 12px;
+}
+.crash-name {
+  font-size: 16px;
+  font-weight: 700;
+}
+.crash-drop-rate {
+  font-size: 13px;
+  font-weight: 600;
+  padding: 3px 10px;
+  border-radius: 12px;
+}
+.crash-scenario.severe .crash-drop-rate {
+  background: #FFEBEE;
+  color: #C62828;
+}
+.crash-scenario.moderate .crash-drop-rate {
+  background: #FFF3E0;
+  color: #E65100;
+}
+.crash-scenario.mild .crash-drop-rate {
+  background: #FFF8E1;
+  color: #F57F17;
+}
+
+.crash-bar-container {
+  margin: 12px 0 8px;
+  height: 12px;
+  background: #F5F0EB;
+  border-radius: 6px;
+  overflow: hidden;
+}
+.crash-bar {
+  height: 100%;
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+.crash-scenario.severe .crash-bar { background: linear-gradient(90deg, #EF9A9A, #C62828); }
+.crash-scenario.moderate .crash-bar { background: linear-gradient(90deg, #FFCC80, #E65100); }
+.crash-scenario.mild .crash-bar { background: linear-gradient(90deg, #FFE082, #F57F17); }
+
+.crash-details {
+  display: flex;
+  justify-content: space-between;
+  font-size: 14px;
+  margin-top: 8px;
+}
+.crash-loss {
+  font-weight: 700;
+  color: var(--danger-dark);
+}
+.crash-recovery {
+  color: #8B7B6B;
+}
+
+.crash-message {
+  background: linear-gradient(135deg, rgba(129, 199, 132, 0.1), rgba(129, 199, 132, 0.05));
+  border: 1px solid rgba(129, 199, 132, 0.3);
+  border-radius: var(--radius-sm);
+  padding: 16px 20px;
+  margin: 24px 0;
+  font-size: 15px;
+  line-height: 1.7;
+  color: var(--text);
+}
+
+/* Action plan */
+.action-section-title {
+  font-size: 20px;
+  font-weight: 700;
+  margin-bottom: 20px;
+  text-align: center;
+}
+
+.action-steps {
+  margin-bottom: 24px;
+}
+.action-step {
+  display: flex;
+  gap: 14px;
+  margin-bottom: 16px;
+  background: var(--white);
+  padding: 18px;
+  border-radius: var(--radius-sm);
+  box-shadow: var(--shadow);
+}
+.action-step-num {
+  min-width: 32px;
+  height: 32px;
+  background: linear-gradient(135deg, var(--main), var(--accent));
+  color: var(--white);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 15px;
+  font-weight: 700;
+  flex-shrink: 0;
+}
+.action-step-text {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.ng-card {
+  background: #FFF5F5;
+  border: 1px solid #FFD0D0;
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 24px;
+}
+.ng-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: #C62828;
+  margin-bottom: 8px;
+}
+.ng-card p {
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+.review-card {
+  background: var(--white);
+  border-radius: var(--radius);
+  padding: 20px;
+  box-shadow: var(--shadow);
+  margin-bottom: 32px;
+}
+.review-card-title {
+  font-size: 15px;
+  font-weight: 700;
+  color: var(--accent);
+  margin-bottom: 12px;
+}
+.review-list {
+  list-style: none;
+}
+.review-list li {
+  font-size: 14px;
+  padding: 6px 0;
+  border-bottom: 1px solid #F0EBE5;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.review-list li:last-child {
+  border-bottom: none;
+}
+.review-dot {
+  width: 6px;
+  height: 6px;
+  background: var(--main);
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+/* Section divider */
+.section-divider {
+  height: 1px;
+  background: var(--sub);
+  margin: 28px 0;
+}
+
+/* Footer */
+.footer {
+  background: var(--white);
+  border-top: 1px solid var(--sub);
+  padding: 24px 20px;
+  font-size: 12px;
+  color: #A0937E;
+  line-height: 1.8;
+}
+.footer p {
+  margin-bottom: 8px;
+}
+.footer .copyright {
+  text-align: center;
+  font-weight: 600;
+  color: var(--accent);
+  margin-top: 12px;
+}
+
+/* Fade animation */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(16px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+.fade-in-up {
+  animation: fadeInUp 0.5s ease forwards;
+}
+
+/* Card appear animation for options */
+.option-card {
+  opacity: 0;
+  transform: translateY(12px);
+}
+.option-card.appear {
+  animation: fadeInUp 0.4s ease forwards;
+}
+
+/* Responsive */
+@media (min-width: 481px) {
+  .app-container {
+    margin: 0 auto;
+    box-shadow: 0 0 40px rgba(74, 55, 40, 0.08);
+    min-height: 100vh;
+  }
+  body {
+    background: #F0EBE5;
+  }
+}
+</style>
+</head>
+<body>
+
+<div class="app-container">
+  <div class="header">あき姉チャンネル</div>
+
+  <!-- Screen 1: Start -->
+  <div class="screen active" id="screen-start">
+    <div class="start-hero">
+      <div class="start-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="#FFF8F0" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/>
+          <path d="M9 12l2 2 4-4"/>
+        </svg>
+      </div>
+      <h1 class="start-title"><em>5つの質問</em>であなたの<br>リスク許容度がわかる！</h1>
+      <p class="start-subtitle">自分に合った投資バランスを見つけよう</p>
+      <div class="start-time">
+        <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M12 6v6l4 2"/></svg>
+        所要時間 約2分
+      </div>
+    </div>
+
+    <div class="start-features">
+      <div class="feature-item">
+        <div class="feature-num">1</div>
+        <div class="feature-text"><strong>5つの質問</strong>に答えるだけ</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">2</div>
+        <div class="feature-text">あなたに合った<strong>安定 : 攻め比率</strong>がわかる</div>
+      </div>
+      <div class="feature-item">
+        <div class="feature-num">3</div>
+        <div class="feature-text"><strong>暴落シミュレーション</strong>で耐性を確認</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" onclick="startQuiz()">診断スタート</button>
+  </div>
+
+  <!-- Screen 2: Questions -->
+  <div class="screen" id="screen-question">
+    <button class="btn-back" onclick="prevQuestion()">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      戻る
+    </button>
+    <div class="progress-container">
+      <div class="progress-label">
+        <span id="progress-text">Q1 / 5</span>
+        <span id="progress-percent">20%</span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill" id="progress-fill" style="width: 20%"></div>
+      </div>
+    </div>
+    <div id="question-area"></div>
+  </div>
+
+  <!-- Screen 3: Result -->
+  <div class="screen" id="screen-result">
+    <div id="result-content"></div>
+  </div>
+
+  <!-- Screen 4: Crash Simulation -->
+  <div class="screen" id="screen-crash">
+    <button class="btn-back" onclick="showScreen('screen-result')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      結果に戻る
+    </button>
+    <div id="crash-content"></div>
+  </div>
+
+  <!-- Screen 5: Action Plan -->
+  <div class="screen" id="screen-action">
+    <button class="btn-back" onclick="showScreen('screen-crash')">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M15 18l-6-6 6-6"/></svg>
+      戻る
+    </button>
+    <div id="action-content"></div>
+  </div>
+
+  <!-- Footer -->
+  <div class="footer">
+    <p>本チェッカーの結果は参考値です。実際の投資判断はご自身の状況を踏まえた上で行ってください。利回りは過去の実績であり、将来のリターンを保証するものではありません。</p>
+    <p>2026年3月時点の情報に基づいています。最新情報は各金融機関の公式サイトでご確認ください。</p>
+    <p>データ出典: 想定年利 … eMAXIS Slim全世界株式の直近10年平均リターン（三菱UFJアセットマネジメント公表データ）、暴落データ … 各種市場データ（MSCI ACWI、S&amp;P500等の過去実績）</p>
+    <p class="copyright">&copy; あき姉チャンネル</p>
+  </div>
+</div>
+
+<script>
+// ===== Data =====
+const questions = [
+  {
+    category: "投資期間",
+    text: "現在の年齢は？",
+    options: [
+      { label: "20〜30代", score: 4 },
+      { label: "40代前半", score: 3 },
+      { label: "40代後半〜50代前半", score: 2 },
+      { label: "50代後半以上", score: 1 }
+    ]
+  },
+  {
+    category: "入金力",
+    text: "毎月投資に回せる余裕資金は？",
+    options: [
+      { label: "1〜2万円", score: 1 },
+      { label: "3〜5万円", score: 2 },
+      { label: "6〜10万円", score: 3 },
+      { label: "10万円以上", score: 4 }
+    ]
+  },
+  {
+    category: "財務余裕度",
+    text: "生活防衛資金は生活費の何ヶ月分ありますか？",
+    options: [
+      { label: "3ヶ月未満", score: 1 },
+      { label: "3〜6ヶ月", score: 2 },
+      { label: "6〜12ヶ月", score: 3 },
+      { label: "1年以上", score: 4 }
+    ]
+  },
+  {
+    category: "メンタル耐性",
+    text: "もし投資額が一時的に30%下がったら？",
+    options: [
+      { label: "すぐ売って損切りする", score: 1 },
+      { label: "不安だけど何もしない", score: 2 },
+      { label: "気にせず積立を続ける", score: 3 },
+      { label: "チャンスと思って追加購入する", score: 4 }
+    ]
+  },
+  {
+    category: "投資ホライズン",
+    text: "投資の目的と期間は？",
+    options: [
+      { label: "5年以内に使う予定のお金", score: 1 },
+      { label: "10年後の教育費・住宅資金", score: 2 },
+      { label: "15〜20年後の老後資金", score: 3 },
+      { label: "特に使う予定なし、長期で増やしたい", score: 4 }
+    ]
+  }
+];
+
+const resultTypes = [
+  {
+    minScore: 5, maxScore: 8,
+    name: "堅実キープ型",
+    stableRatio: 100, aggressiveRatio: 0,
+    yieldRange: "約7%",
+    advice: "無理せず着実に、がいちばんの近道ですよ。焦ってリスクを取る必要は全然ないので安心してくださいね。今のスタイルで安定銘柄をコツコツ積み立てていけば、十分に資産は育っていきますから。",
+    actions: [
+      "証券口座で現在の保有状況を確認する",
+      "安定銘柄の積立設定が月額の10〜15%になっているか確認する",
+      "半年後にもう一度このチェッカーで診断してみる"
+    ],
+    ng: "SNSで話題の銘柄に飛びつく"
+  },
+  {
+    minScore: 9, maxScore: 11,
+    name: "安定重視型",
+    stableRatio: 90, aggressiveRatio: 10,
+    yieldRange: "約8〜9%",
+    advice: "安定を大事にしながら、ほんの少しだけ攻めを足すのがちょうどいいバランスですね。攻め銘柄は1割で十分です。欲張りすぎず、ゆっくりペースアップしていきましょう。",
+    actions: [
+      "安定銘柄の積立がメインになっているか確認する",
+      "攻め銘柄を月額の10%分だけ積立設定してみる",
+      "半年後に比率と成績を見直す"
+    ],
+    ng: "リターンが物足りないからと比率を急に変える"
+  },
+  {
+    minScore: 12, maxScore: 14,
+    name: "バランス型",
+    stableRatio: 80, aggressiveRatio: 20,
+    yieldRange: "約9〜10%",
+    advice: "バランス感覚がしっかりしているタイプですね。安定8割・攻め2割を基本にして、相場が荒れた時も冷静に対処できるのがあなたの強みだと思いますよ。",
+    actions: [
+      "証券口座で現在の保有銘柄と比率を確認する",
+      "攻め銘柄の積立設定を月額の20%分で新規設定する",
+      "3ヶ月後にこのチェッカーをもう一度やって変化を確認する"
+    ],
+    ng: "攻め銘柄が好調だからと比率を50%以上に増やす"
+  },
+  {
+    minScore: 15, maxScore: 17,
+    name: "やや積極型",
+    stableRatio: 70, aggressiveRatio: 30,
+    yieldRange: "約10〜11%",
+    advice: "リスクを取れる余裕があるのは素晴らしいことですよ。ただし、攻めは3割までがちょうどいいラインです。暴落が来ても「想定内」って思えるくらいがいちばん理想的ですからね。",
+    actions: [
+      "現在のポートフォリオで攻め銘柄が3割以内に収まっているか確認する",
+      "攻め銘柄を1つに絞り、月額の30%分で積立設定する",
+      "暴落時のルール「-30%までは売らない」を紙に書いて貼っておく"
+    ],
+    ng: "暴落時にパニック売りする"
+  },
+  {
+    minScore: 18, maxScore: 20,
+    name: "積極運用型",
+    stableRatio: 50, aggressiveRatio: 50,
+    yieldRange: "約12〜14%",
+    advice: "攻めの姿勢、素晴らしいですね！ ただ、攻め5割がMAXラインだと思ってください。それ以上になるとギャンブルに近くなってしまうので。生活防衛資金はしっかり確保した上で攻めること、これだけは絶対に守ってくださいね。",
+    actions: [
+      "生活防衛資金が生活費6ヶ月分以上あることを再確認する",
+      "攻め銘柄を1〜2種類に絞って月額の50%分で積立設定する",
+      "毎月1回、ポートフォリオの比率をチェックしてリバランスする"
+    ],
+    ng: "生活防衛資金まで投資に回す"
+  }
+];
+
+// ===== State =====
+let currentQuestion = 0;
+let answers = [];
+let currentResult = null;
+
+// ===== Screen management =====
+function showScreen(screenId) {
+  document.querySelectorAll('.screen').forEach(s => {
+    s.classList.remove('active', 'visible');
+  });
+  const target = document.getElementById(screenId);
+  target.classList.add('active');
+  window.scrollTo({ top: 0, behavior: 'instant' });
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      target.classList.add('visible');
+    });
+  });
+}
+
+// ===== Start =====
+function startQuiz() {
+  currentQuestion = 0;
+  answers = [];
+  renderQuestion();
+  showScreen('screen-question');
+}
+
+// ===== Questions =====
+function renderQuestion() {
+  const q = questions[currentQuestion];
+  const progress = ((currentQuestion + 1) / questions.length) * 100;
+  document.getElementById('progress-text').textContent = `Q${currentQuestion + 1} / ${questions.length}`;
+  document.getElementById('progress-percent').textContent = `${Math.round(progress)}%`;
+  document.getElementById('progress-fill').style.width = progress + '%';
+
+  const letters = ['A', 'B', 'C', 'D'];
+  let html = `
+    <div class="fade-in-up">
+      <span class="question-category">${q.category}</span>
+      <h2 class="question-text">${q.text}</h2>
+      <div class="options">
+  `;
+  q.options.forEach((opt, i) => {
+    const selected = answers[currentQuestion] === i ? ' selected' : '';
+    html += `
+      <div class="option-card${selected} appear" style="animation-delay: ${i * 0.08}s" onclick="selectOption(${i})">
+        <span class="option-letter">${letters[i]}</span>
+        <span class="option-label">${opt.label}</span>
+      </div>
+    `;
+  });
+  html += '</div></div>';
+  document.getElementById('question-area').innerHTML = html;
+
+  // Show/hide back button
+  document.querySelector('#screen-question .btn-back').style.visibility = currentQuestion === 0 ? 'hidden' : 'visible';
+}
+
+function selectOption(index) {
+  answers[currentQuestion] = index;
+  // Highlight selected
+  document.querySelectorAll('.option-card').forEach((card, i) => {
+    card.classList.toggle('selected', i === index);
+  });
+  // Next question or show result
+  setTimeout(() => {
+    if (currentQuestion < questions.length - 1) {
+      currentQuestion++;
+      renderQuestion();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    } else {
+      calculateResult();
+    }
+  }, 350);
+}
+
+function prevQuestion() {
+  if (currentQuestion > 0) {
+    currentQuestion--;
+    renderQuestion();
+  } else {
+    showScreen('screen-start');
+  }
+}
+
+// ===== Result =====
+function calculateResult() {
+  let totalScore = 0;
+  answers.forEach((ansIdx, qIdx) => {
+    totalScore += questions[qIdx].options[ansIdx].score;
+  });
+  currentResult = resultTypes.find(r => totalScore >= r.minScore && totalScore <= r.maxScore);
+  currentResult.totalScore = totalScore;
+  renderResult();
+  showScreen('screen-result');
+}
+
+function renderResult() {
+  const r = currentResult;
+  const stableAngle = (r.stableRatio / 100) * 360;
+  const aggressiveAngle = (r.aggressiveRatio / 100) * 360;
+
+  // SVG donut chart
+  function describeArc(cx, cy, radius, startAngle, endAngle) {
+    const start = polarToCartesian(cx, cy, radius, endAngle);
+    const end = polarToCartesian(cx, cy, radius, startAngle);
+    const largeArc = endAngle - startAngle <= 180 ? 0 : 1;
+    return `M ${start.x} ${start.y} A ${radius} ${radius} 0 ${largeArc} 0 ${end.x} ${end.y}`;
+  }
+  function polarToCartesian(cx, cy, r, deg) {
+    const rad = (deg - 90) * Math.PI / 180;
+    return { x: cx + r * Math.cos(rad), y: cy + r * Math.sin(rad) };
+  }
+
+  let donutSVG = '';
+  if (r.aggressiveRatio === 0) {
+    donutSVG = `
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <circle cx="90" cy="90" r="70" fill="none" stroke="#C4A882" stroke-width="28"/>
+      </svg>`;
+  } else {
+    const gap = 2;
+    donutSVG = `
+      <svg width="180" height="180" viewBox="0 0 180 180">
+        <path d="${describeArc(90, 90, 70, 0, stableAngle - gap)}" fill="none" stroke="#C4A882" stroke-width="28" stroke-linecap="round"/>
+        <path d="${describeArc(90, 90, 70, stableAngle + gap, 360)}" fill="none" stroke="#8B6F47" stroke-width="28" stroke-linecap="round"/>
+      </svg>`;
+  }
+
+  let html = `
+    <div class="fade-in-up">
+      <div class="result-type-badge">
+        <p class="result-type-label">あなたのリスク許容度は…</p>
+        <h2 class="result-type-name">${r.name}</h2>
+        <p class="result-score">スコア: ${r.totalScore}点 / 20点</p>
+      </div>
+
+      <div class="chart-container">
+        ${donutSVG}
+        <div class="chart-center-text">
+          <div class="ratio-label">安定 : 攻め</div>
+          <div class="ratio-value">${r.stableRatio} : ${r.aggressiveRatio}</div>
+        </div>
+      </div>
+
+      <div class="chart-legend">
+        <span class="legend-item"><span class="legend-dot stable"></span>安定銘柄 ${r.stableRatio}%</span>
+        ${r.aggressiveRatio > 0 ? `<span class="legend-item"><span class="legend-dot aggressive"></span>攻め銘柄 ${r.aggressiveRatio}%</span>` : ''}
+      </div>
+
+      <div class="yield-info">
+        <div class="yield-label">想定年利レンジ（過去実績ベース）</div>
+        <div class="yield-value">${r.yieldRange}</div>
+      </div>
+
+      <div class="advice-card">
+        <div class="advice-card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B6F47" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          あき姉からのひとこと
+        </div>
+        <p>${r.advice}</p>
+      </div>
+
+      <button class="btn-primary" onclick="showCrashSimulation()">暴落シミュレーションを見る</button>
+      <button class="btn-secondary" onclick="showActionPlan()">アクションプランを見る</button>
+    </div>
+  `;
+  document.getElementById('result-content').innerHTML = html;
+}
+
+// ===== Crash Simulation =====
+function showCrashSimulation() {
+  renderCrash(1000);
+  showScreen('screen-crash');
+}
+
+function renderCrash(amount) {
+  const r = currentResult;
+  const stableW = r.stableRatio / 100;
+  const aggressiveW = r.aggressiveRatio / 100;
+
+  const scenarios = [
+    {
+      name: "リーマンショック級",
+      severity: "severe",
+      stableDrop: 50, aggressiveDrop: 65,
+      recovery: "約5年半"
+    },
+    {
+      name: "コロナショック級",
+      severity: "moderate",
+      stableDrop: 30, aggressiveDrop: 40,
+      recovery: "約5ヶ月"
+    },
+    {
+      name: "トランプ関税ショック級",
+      severity: "mild",
+      stableDrop: 15, aggressiveDrop: 30,
+      recovery: "数ヶ月〜1年"
+    }
+  ];
+
+  let scenarioHTML = '';
+  let worstLoss = 0;
+
+  scenarios.forEach(s => {
+    const dropRate = stableW * s.stableDrop + aggressiveW * s.aggressiveDrop;
+    const lossAmount = Math.round(amount * dropRate / 100);
+    const barWidth = Math.min(dropRate / 65 * 100, 100);
+    if (lossAmount > worstLoss) worstLoss = lossAmount;
+
+    scenarioHTML += `
+      <div class="crash-scenario ${s.severity}">
+        <div class="crash-header">
+          <div class="crash-name">${s.name}</div>
+          <span class="crash-drop-rate">-${dropRate.toFixed(1)}%</span>
+        </div>
+        <div class="crash-bar-container">
+          <div class="crash-bar" style="width: ${barWidth}%"></div>
+        </div>
+        <div class="crash-details">
+          <span class="crash-loss">-${lossAmount.toLocaleString()}万円</span>
+          <span class="crash-recovery">回復目安: ${s.recovery}</span>
+        </div>
+      </div>
+    `;
+  });
+
+  let html = `
+    <div class="fade-in-up">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">暴落シミュレーション</h2>
+      <p style="font-size: 14px; color: #8B7B6B; margin-bottom: 20px;">もし暴落が来たら、あなたのポートフォリオはどうなる？</p>
+
+      <div class="slider-container">
+        <div class="slider-label">
+          <span class="slider-label-text">投資総額（予定額）</span>
+          <span class="slider-value" id="slider-display">${amount.toLocaleString()}<span>万円</span></span>
+        </div>
+        <input type="range" min="100" max="5000" step="50" value="${amount}" oninput="updateCrash(this.value)">
+        <div class="slider-range">
+          <span>100万円</span>
+          <span>5,000万円</span>
+        </div>
+      </div>
+
+      <div id="crash-scenarios">${scenarioHTML}</div>
+
+      <div class="crash-message" id="crash-message">
+        あなたのポートフォリオ（安定${r.stableRatio}% : 攻め${r.aggressiveRatio}%）なら、最悪のケースでも<strong>${worstLoss.toLocaleString()}万円</strong>の一時的な下落に収まります。暴落は一時的なもの。慌てず、積立を続けることが大切やで。
+      </div>
+
+      <button class="btn-primary" onclick="showActionPlan()">アクションプランを見る</button>
+    </div>
+  `;
+  document.getElementById('crash-content').innerHTML = html;
+}
+
+function updateCrash(val) {
+  const amount = parseInt(val);
+  document.getElementById('slider-display').innerHTML = amount.toLocaleString() + '<span>万円</span>';
+
+  const r = currentResult;
+  const stableW = r.stableRatio / 100;
+  const aggressiveW = r.aggressiveRatio / 100;
+
+  const scenarios = [
+    { stableDrop: 50, aggressiveDrop: 65, severity: "severe" },
+    { stableDrop: 30, aggressiveDrop: 40, severity: "moderate" },
+    { stableDrop: 15, aggressiveDrop: 30, severity: "mild" }
+  ];
+  const recoveries = ["約5年半", "約5ヶ月", "数ヶ月〜1年"];
+  const names = ["リーマンショック級", "コロナショック級", "トランプ関税ショック級"];
+
+  let worstLoss = 0;
+  const scenarioEls = document.querySelectorAll('.crash-scenario');
+  scenarios.forEach((s, i) => {
+    const dropRate = stableW * s.stableDrop + aggressiveW * s.aggressiveDrop;
+    const lossAmount = Math.round(amount * dropRate / 100);
+    const barWidth = Math.min(dropRate / 65 * 100, 100);
+    if (lossAmount > worstLoss) worstLoss = lossAmount;
+
+    const el = scenarioEls[i];
+    el.querySelector('.crash-drop-rate').textContent = `-${dropRate.toFixed(1)}%`;
+    el.querySelector('.crash-bar').style.width = barWidth + '%';
+    el.querySelector('.crash-loss').textContent = `-${lossAmount.toLocaleString()}万円`;
+  });
+
+  document.getElementById('crash-message').innerHTML = `あなたのポートフォリオ（安定${r.stableRatio}% : 攻め${r.aggressiveRatio}%）なら、最悪のケースでも<strong>${worstLoss.toLocaleString()}万円</strong>の一時的な下落に収まります。暴落は一時的なもの。慌てず、積立を続けることが大切やで。`;
+}
+
+// ===== Action Plan =====
+function showActionPlan() {
+  const r = currentResult;
+
+  let stepsHTML = '';
+  r.actions.forEach((action, i) => {
+    stepsHTML += `
+      <div class="action-step">
+        <span class="action-step-num">${i + 1}</span>
+        <span class="action-step-text">${action}</span>
+      </div>
+    `;
+  });
+
+  let html = `
+    <div class="fade-in-up">
+      <h2 class="action-section-title">今日やること 3ステップ</h2>
+      <p style="text-align: center; font-size: 14px; color: #8B7B6B; margin-bottom: 24px;">「${r.name}」のあなたへ</p>
+
+      <div class="action-steps">${stepsHTML}</div>
+
+      <div class="ng-card">
+        <div class="ng-card-title">NG アクション</div>
+        <p>${r.ng}</p>
+      </div>
+
+      <div class="section-divider"></div>
+
+      <div class="review-card">
+        <div class="review-card-title">見直しタイミング</div>
+        <ul class="review-list">
+          <li><span class="review-dot"></span>年1回の定期見直し</li>
+          <li><span class="review-dot"></span>転職・結婚・出産などのライフイベント時</li>
+          <li><span class="review-dot"></span>大きな暴落があった後</li>
+        </ul>
+      </div>
+
+      <div class="advice-card">
+        <div class="advice-card-title">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="#8B6F47" stroke-width="2"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z"/></svg>
+          あき姉より
+        </div>
+        <p>大事なのは「完璧な比率」を見つけることやなくて、「自分が納得できる比率」で長く続けることやで。迷ったらまたこのチェッカーで診断してみてな！</p>
+      </div>
+
+      <button class="btn-primary" onclick="startQuiz()">もう一度診断する</button>
+      <button class="btn-secondary" onclick="showScreen('screen-result')">結果に戻る</button>
+    </div>
+  `;
+  document.getElementById('action-content').innerHTML = html;
+  showScreen('screen-action');
+}
+
+// ===== Init =====
+document.addEventListener('DOMContentLoaded', function() {
+  const startScreen = document.getElementById('screen-start');
+  requestAnimationFrame(() => {
+    startScreen.classList.add('visible');
+  });
+});
+</script>
+
+</body>
+</html>
